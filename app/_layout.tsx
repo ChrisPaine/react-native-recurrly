@@ -2,6 +2,7 @@ import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect } from "react";
 
+
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     'sans-regular': require('../assets/fonts/PlusJakartaSans-Regular.ttf'),
@@ -10,7 +11,7 @@ export default function RootLayout() {
     'sans-semibold': require('../assets/fonts/PlusJakartaSans-SemiBold.ttf'),
     'sans-extrabold': require('../assets/fonts/PlusJakartaSans-ExtraBold.ttf'),
     'sans-light': require('../assets/fonts/PlusJakartaSans-Light.ttf')
-  })
+  });
 
   useEffect(() => {
     if(fontsLoaded) {
@@ -21,6 +22,11 @@ export default function RootLayout() {
   if(!fontsLoaded) return null;
 
   return (
-    <Stack screenOptions={{ headerShown: false}} />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" /> 
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(auth)" />
+    </Stack>
+
   );
 }
