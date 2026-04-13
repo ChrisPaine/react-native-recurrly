@@ -53,7 +53,7 @@ const TabLayout = () => {
               <TabIcon focused={focused} icon={tab.icon} />
             )
           }} />
-      ))},
+      ))}
   </Tabs>
   );
 };
