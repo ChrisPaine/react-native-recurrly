@@ -4,7 +4,7 @@ import { styled } from 'nativewind';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context';
-{/*import { usePostHog } from 'posthog-react-native';*/}
+// import { usePostHog } from 'posthog-react-native';
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -12,7 +12,7 @@ const SignUp = () => {
     const { signUp, errors, fetchStatus } = useSignUp();
     const { isSignedIn } = useAuth();
     const router = useRouter();
-    {/*const posthog = usePostHog();*/}
+    // const posthog = usePostHog();
 
     const [emailAddress, setEmailAddress] = useState('');
     const [password, setPassword] = useState('');
@@ -44,8 +44,11 @@ const SignUp = () => {
         }
 
         // Send verification email
-        if (!error) {
+        try {
             await signUp.verifications.sendEmailCode();
+        } catch (verificationError) {
+            console.error('Failed to send verification email:', verificationError);
+            // Optionally set error state or show UI error
         }
     };
 
@@ -62,12 +65,13 @@ const SignUp = () => {
                         return;
                     }
 
-                    {/*posthog.identify(emailAddress, {
+                    /*
+                    posthog.identify(emailAddress, {
                         $set: { email: emailAddress },
                         $set_once: { sign_up_date: new Date().toISOString() },
                     });
                     posthog.capture('user_signed_up', { email: emailAddress });
-*/}
+                    */
                     const url = decorateUrl('/(tabs)');
                     if (url.startsWith('http')) {
                         // Only use window.location on web platform

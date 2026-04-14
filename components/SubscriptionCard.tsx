@@ -32,7 +32,7 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                 <View className='sub-row'>
                     <View className='sub-row-copy'>
                         <Text className='sub-label'>Payment:</Text>
-                        <Text className='sub-value' numberOfLines={1} ellipsizeMode='tail'>{paymentMethod?.trim() ?? 'Not Provided'}</Text>
+                        <Text className='sub-value' numberOfLines={1} ellipsizeMode='tail'>{paymentMethod?.trim() || 'Not Provided'}</Text>
                     </View>
                 </View>
                     <View className='sub-row'>
@@ -44,19 +44,19 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                     <View className='sub-row'>
                     <View className='sub-row-copy'>
                         <Text className='sub-label'>Started:</Text>
-                        <Text className='sub-value' numberOfLines={1} ellipsizeMode='tail'>{startDate ? formatSubscriptionDateTime(startDate) ?? 'Not Provided' : ''}</Text>
+                        <Text className='sub-value' numberOfLines={1} ellipsizeMode='tail'>{startDate ? formatSubscriptionDateTime(startDate) : ''}</Text>
                     </View>
                 </View>
                     <View className='sub-row'>
                     <View className='sub-row-copy'>
                         <Text className='sub-label'>Renewal Date:</Text>
-                        <Text className='sub-value' numberOfLines={1} ellipsizeMode='tail'>{renewalDate ? formatSubscriptionDateTime(renewalDate) ?? 'Not Provided': ''}</Text>
+                        <Text className='sub-value' numberOfLines={1} ellipsizeMode='tail'>{renewalDate ? formatSubscriptionDateTime(renewalDate) : ''}</Text>
                     </View>
                 </View>
                     <View className='sub-row'>
                     <View className='sub-row-copy'>
                         <Text className='sub-label'>Status:</Text>
-                        <Text className='sub-value' numberOfLines={1} ellipsizeMode='tail'>{status ? formatStatusLabel(status) ?? 'Not Provided' : ''}</Text>
+                        <Text className='sub-value' numberOfLines={1} ellipsizeMode='tail'>{formatStatusLabel(status?.trim())}</Text>
                     </View>
                 </View>
             </View>

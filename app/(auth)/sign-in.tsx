@@ -4,14 +4,14 @@ import { styled } from 'nativewind';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context';
-{/*import { usePostHog } from 'posthog-react-native';*/}
+// import { usePostHog } from 'posthog-react-native';
 
 const SafeAreaView = styled(RNSafeAreaView);
 
 const SignIn = () => {
     const { signIn, errors, fetchStatus } = useSignIn();
     const router = useRouter();
-    {/*const posthog = usePostHog();*/}
+    // const posthog = usePostHog();
 
     const [emailAddress, setEmailAddress] = useState('');
     const [password, setPassword] = useState('');
@@ -25,6 +25,26 @@ const SignIn = () => {
     const emailValid = emailAddress.length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress);
     const passwordValid = password.length > 0;
     const formValid = emailAddress.length > 0 && password.length > 0 && emailValid;
+
+    const navigateAfterSignIn = ({ session, decorateUrl }: { session?: any; decorateUrl: (url: string) => string }) => {
+        if (session?.currentTask) {
+            console.log(session?.currentTask);
+            return;
+        }
+
+        const url = decorateUrl('/(tabs)');
+        if (url.startsWith('http')) {
+            // Only use window.location on web platform
+            if (typeof window !== 'undefined' && window.location) {
+                window.location.href = url;
+            } else {
+                // On native, just use router navigation
+                router.replace('/(tabs)' as Href);
+            }
+        } else {
+            router.replace(url as Href);
+        }
+    };
 
     const handleSubmit = async () => {
         if (!formValid) return;
@@ -44,31 +64,7 @@ const SignIn = () => {
 
         if (signIn.status === 'complete') {
             await signIn.finalize({
-                navigate: ({ session, decorateUrl }) => {
-                    if (session?.currentTask) {
-                        console.log(session?.currentTask);
-                        return;
-                    }
-
-                    {/*posthog.identify(emailAddress, {
-                        $set: { email: emailAddress },
-                        $set_once: { first_sign_in_date: new Date().toISOString() },
-                    });
-                    posthog.capture('user_signed_in', { email: emailAddress });
-*/}
-                    const url = decorateUrl('/(tabs)');
-                    if (url.startsWith('http')) {
-                        // Only use window.location on web platform
-                        if (typeof window !== 'undefined' && window.location) {
-                            window.location.href = url;
-                        } else {
-                            // On native, just use router navigation
-                            router.replace('/(tabs)' as Href);
-                        }
-                    } else {
-                        router.replace(url as Href);
-                    }
-                },
+                navigate: navigateAfterSignIn,
             });
         } else if (signIn.status === 'needs_second_factor') {
             // Handle MFA if needed (not implemented in this basic flow)
@@ -92,33 +88,7 @@ const SignIn = () => {
 
         if (signIn.status === 'complete') {
             await signIn.finalize({
-                navigate: ({ session, decorateUrl }) => {
-                    if (session?.currentTask) {
-                        console.log(session?.currentTask);
-                        return;
-                    }
-
-                    // Track successful sign-in after verification
-                    {/*posthog.identify(emailAddress, {
-                        $set: { email: emailAddress },
-                        $set_once: { first_sign_in_date: new Date().toISOString() },
-                    });
-                    posthog.capture('user_signed_in', { email: emailAddress });
-*/}
-
-                    const url = decorateUrl('/(tabs)');
-                    if (url.startsWith('http')) {
-                        // Only use window.location on web platform
-                        if (typeof window !== 'undefined' && window.location) {
-                            window.location.href = url;
-                        } else {
-                            // On native, just use router navigation
-                            router.replace('/(tabs)' as Href);
-                        }
-                    } else {
-                        router.replace(url as Href);
-                    }
-                },
+                navigate: navigateAfterSignIn,
             });
         } else {
             console.error('Sign-in attempt not complete:', signIn);
