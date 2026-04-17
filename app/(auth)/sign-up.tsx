@@ -1,40 +1,34 @@
+
 import { useAuth, useSignUp } from '@clerk/expo';
 import { Link, useRouter, type Href } from 'expo-router';
 import { styled } from 'nativewind';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context';
-// import { usePostHog } from 'posthog-react-native';
+{/*import { usePostHog } from 'posthog-react-native';*/}
 
 const SafeAreaView = styled(RNSafeAreaView);
-
 const SignUp = () => {
     const { signUp, errors, fetchStatus } = useSignUp();
     const { isSignedIn } = useAuth();
     const router = useRouter();
-    // const posthog = usePostHog();
-
+    {/*const posthog = usePostHog();*/}
     const [emailAddress, setEmailAddress] = useState('');
     const [password, setPassword] = useState('');
     const [code, setCode] = useState('');
-
     // Validation states
     const [emailTouched, setEmailTouched] = useState(false);
     const [passwordTouched, setPasswordTouched] = useState(false);
-
     // Client-side validation
     const emailValid = emailAddress.length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress);
     const passwordValid = password.length === 0 || password.length >= 8;
     const formValid = emailAddress.length > 0 && password.length >= 8 && emailValid;
-
     const handleSubmit = async () => {
         if (!formValid) return;
-
         const { error } = await signUp.password({
             emailAddress,
             password,
         });
-
         if (error) {
             console.error(JSON.stringify(error, null, 2));
             {/*posthog.capture('user_sign_up_failed', {
@@ -42,21 +36,15 @@ const SignUp = () => {
             });*/}
             return;
         }
-
         // Send verification email
-        try {
+        if (!error) {
             await signUp.verifications.sendEmailCode();
-        } catch (verificationError) {
-            console.error('Failed to send verification email:', verificationError);
-            // Optionally set error state or show UI error
         }
     };
-
     const handleVerify = async () => {
         await signUp.verifications.verifyEmailCode({
             code,
         });
-
         if (signUp.status === 'complete') {
             await signUp.finalize({
                 navigate: ({ session, decorateUrl }) => {
@@ -64,14 +52,12 @@ const SignUp = () => {
                         console.log(session?.currentTask);
                         return;
                     }
-
-                    /*
-                    posthog.identify(emailAddress, {
+                    {/*posthog.identify(emailAddress, {
                         $set: { email: emailAddress },
                         $set_once: { sign_up_date: new Date().toISOString() },
                     });
                     posthog.capture('user_signed_up', { email: emailAddress });
-                    */
+			  */}
                     const url = decorateUrl('/(tabs)');
                     if (url.startsWith('http')) {
                         // Only use window.location on web platform
@@ -90,12 +76,10 @@ const SignUp = () => {
             console.error('Sign-up attempt not complete:', signUp);
         }
     };
-
     // Don't show anything if already signed in or sign-up is complete
     if (signUp.status === 'complete' || isSignedIn) {
         return null;
     }
-
     // Show verification screen if email needs verification
     if (
         signUp.status === 'missing_requirements' &&
@@ -130,7 +114,6 @@ const SignUp = () => {
                                     We sent a verification code to {emailAddress}
                                 </Text>
                             </View>
-
                             {/* Verification Form */}
                             <View className="auth-card">
                                 <View className="auth-form">
@@ -150,7 +133,6 @@ const SignUp = () => {
                                             <Text className="auth-error">{errors.fields.code.message}</Text>
                                         )}
                                     </View>
-
                                     <Pressable
                                         className={`auth-button ${(!code || fetchStatus === 'fetching') && 'auth-button-disabled'}`}
                                         onPress={handleVerify}
@@ -160,7 +142,6 @@ const SignUp = () => {
                                             {fetchStatus === 'fetching' ? 'Verifying...' : 'Verify Email'}
                                         </Text>
                                     </Pressable>
-
                                     <Pressable
                                         className="auth-secondary-button"
                                         onPress={() => signUp.verifications.sendEmailCode()}
@@ -176,7 +157,6 @@ const SignUp = () => {
             </SafeAreaView>
         );
     }
-
     // Main sign-up form
     return (
         <SafeAreaView className="auth-safe-area">
@@ -206,7 +186,6 @@ const SignUp = () => {
                                 Start tracking your subscriptions and never miss a payment
                             </Text>
                         </View>
-
                         {/* Sign-Up Form */}
                         <View className="auth-card">
                             <View className="auth-form">
@@ -230,7 +209,6 @@ const SignUp = () => {
                                         <Text className="auth-error">{errors.fields.emailAddress.message}</Text>
                                     )}
                                 </View>
-
                                 <View className="auth-field">
                                     <Text className="auth-label">Password</Text>
                                     <TextInput
@@ -253,7 +231,6 @@ const SignUp = () => {
                                         <Text className="auth-helper">Minimum 8 characters required</Text>
                                     )}
                                 </View>
-
                                 <Pressable
                                     className={`auth-button ${(!formValid || fetchStatus === 'fetching') && 'auth-button-disabled'}`}
                                     onPress={handleSubmit}
@@ -265,7 +242,6 @@ const SignUp = () => {
                                 </Pressable>
                             </View>
                         </View>
-
                         {/* Sign-In Link */}
                         <View className="auth-link-row">
                             <Text className="auth-link-copy">Already have an account?</Text>
@@ -275,7 +251,6 @@ const SignUp = () => {
                                 </Pressable>
                             </Link>
                         </View>
-
                         {/* Required for Clerk's bot protection */}
                         <View nativeID="clerk-captcha" />
                     </View>
@@ -284,5 +259,4 @@ const SignUp = () => {
         </SafeAreaView>
     );
 };
-
 export default SignUp;
