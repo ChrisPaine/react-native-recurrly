@@ -22,6 +22,7 @@ const Subscriptions = () => {
         <SafeAreaView className="flex-1 bg-background">
             <FlatList
                 data={filteredSubscriptions}
+                extraData={expandedId}
                 keyExtractor={(item) => item.id}
                 ListHeaderComponent={
                     <View className="px-5 pt-5">

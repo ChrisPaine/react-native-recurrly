@@ -85,7 +85,15 @@ export default function App() {
 
                                 <FlatList
                                     data={upcomingSubscriptions}
-                                    renderItem={({ item }) => (<UpcomingSubscriptionCard daysLeft={0} {...item} />)}
+                                    renderItem={({ item }) => (
+                                        <UpcomingSubscriptionCard 
+                                            daysLeft={Math.max(
+                                                0,
+                                                dayjs(item.renewalDate).startOf('day').diff(dayjs().startOf('day'), 'day')
+                                            )}
+                                            {...item} 
+                                        />
+                                    )}
                                     keyExtractor={(item) => item.id}
                                     horizontal
                                     showsHorizontalScrollIndicator={false}
