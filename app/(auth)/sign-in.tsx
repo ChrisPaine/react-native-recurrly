@@ -1,3 +1,4 @@
+
 import { useSignIn } from '@clerk/expo';
 import { Link, useRouter, type Href } from 'expo-router';
 import { styled } from 'nativewind';
@@ -7,33 +8,26 @@ import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context';
 {/*import { usePostHog } from 'posthog-react-native';*/}
 
 const SafeAreaView = styled(RNSafeAreaView);
-
 const SignIn = () => {
     const { signIn, errors, fetchStatus } = useSignIn();
     const router = useRouter();
     {/*const posthog = usePostHog();*/}
-
     const [emailAddress, setEmailAddress] = useState('');
     const [password, setPassword] = useState('');
     const [code, setCode] = useState('');
-
     // Validation states
     const [emailTouched, setEmailTouched] = useState(false);
     const [passwordTouched, setPasswordTouched] = useState(false);
-
     // Client-side validation
     const emailValid = emailAddress.length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress);
     const passwordValid = password.length > 0;
     const formValid = emailAddress.length > 0 && password.length > 0 && emailValid;
-
     const handleSubmit = async () => {
         if (!formValid) return;
-
         const { error } = await signIn.password({
             emailAddress,
             password,
         });
-
         if (error) {
             console.error(JSON.stringify(error, null, 2));
             {/*posthog.capture('user_sign_in_failed', {
@@ -41,7 +35,6 @@ const SignIn = () => {
             });*/}
             return;
         }
-
         if (signIn.status === 'complete') {
             await signIn.finalize({
                 navigate: ({ session, decorateUrl }) => {
@@ -49,7 +42,6 @@ const SignIn = () => {
                         console.log(session?.currentTask);
                         return;
                     }
-
                     {/*posthog.identify(emailAddress, {
                         $set: { email: emailAddress },
                         $set_once: { first_sign_in_date: new Date().toISOString() },
@@ -78,7 +70,6 @@ const SignIn = () => {
             const emailCodeFactor = signIn.supportedSecondFactors.find(
                 (factor) => factor.strategy === 'email_code'
             );
-
             if (emailCodeFactor) {
                 await signIn.mfa.sendEmailCode();
             }
@@ -86,10 +77,8 @@ const SignIn = () => {
             console.error('Sign-in attempt not complete:', signIn);
         }
     };
-
     const handleVerify = async () => {
         await signIn.mfa.verifyEmailCode({ code });
-
         if (signIn.status === 'complete') {
             await signIn.finalize({
                 navigate: ({ session, decorateUrl }) => {
@@ -97,7 +86,6 @@ const SignIn = () => {
                         console.log(session?.currentTask);
                         return;
                     }
-
                     // Track successful sign-in after verification
                     {/*posthog.identify(emailAddress, {
                         $set: { email: emailAddress },
@@ -105,7 +93,6 @@ const SignIn = () => {
                     });
                     posthog.capture('user_signed_in', { email: emailAddress });
 */}
-
                     const url = decorateUrl('/(tabs)');
                     if (url.startsWith('http')) {
                         // Only use window.location on web platform
@@ -124,7 +111,6 @@ const SignIn = () => {
             console.error('Sign-in attempt not complete:', signIn);
         }
     };
-
     // Show verification screen if client trust is needed
     if (signIn.status === 'needs_client_trust') {
         return (
@@ -155,7 +141,6 @@ const SignIn = () => {
                                     We sent a verification code to your email
                                 </Text>
                             </View>
-
                             {/* Verification Form */}
                             <View className="auth-card">
                                 <View className="auth-form">
@@ -175,7 +160,6 @@ const SignIn = () => {
                                             <Text className="auth-error">{errors.fields.code.message}</Text>
                                         )}
                                     </View>
-
                                     <Pressable
                                         className={`auth-button ${(!code || fetchStatus === 'fetching') && 'auth-button-disabled'}`}
                                         onPress={handleVerify}
@@ -185,7 +169,6 @@ const SignIn = () => {
                                             {fetchStatus === 'fetching' ? 'Verifying...' : 'Verify'}
                                         </Text>
                                     </Pressable>
-
                                     <Pressable
                                         className="auth-secondary-button"
                                         onPress={() => signIn.mfa.sendEmailCode()}
@@ -193,7 +176,6 @@ const SignIn = () => {
                                     >
                                         <Text className="auth-secondary-button-text">Resend Code</Text>
                                     </Pressable>
-
                                     <Pressable
                                         className="auth-secondary-button"
                                         onPress={() => signIn.reset()}
@@ -209,7 +191,6 @@ const SignIn = () => {
             </SafeAreaView>
         );
     }
-
     // Main sign-in form
     return (
         <SafeAreaView className="auth-safe-area">
@@ -239,7 +220,6 @@ const SignIn = () => {
                                 Sign in to continue managing your subscriptions
                             </Text>
                         </View>
-
                         {/* Sign-In Form */}
                         <View className="auth-card">
                             <View className="auth-form">
@@ -263,7 +243,6 @@ const SignIn = () => {
                                         <Text className="auth-error">{errors.fields.identifier.message}</Text>
                                     )}
                                 </View>
-
                                 <View className="auth-field">
                                     <Text className="auth-label">Password</Text>
                                     <TextInput
@@ -283,7 +262,6 @@ const SignIn = () => {
                                         <Text className="auth-error">{errors.fields.password.message}</Text>
                                     )}
                                 </View>
-
                                 <Pressable
                                     className={`auth-button ${(!formValid || fetchStatus === 'fetching') && 'auth-button-disabled'}`}
                                     onPress={handleSubmit}
@@ -295,7 +273,6 @@ const SignIn = () => {
                                 </Pressable>
                             </View>
                         </View>
-
                         {/* Sign-Up Link */}
                         <View className="auth-link-row">
                             <Text className="auth-link-copy">Don't have an account?</Text>
@@ -311,5 +288,4 @@ const SignIn = () => {
         </SafeAreaView>
     );
 };
-
 export default SignIn;

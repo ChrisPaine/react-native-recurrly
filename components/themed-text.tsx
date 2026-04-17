@@ -1,3 +1,4 @@
+import { colors } from '@/constants/theme'
 import React from 'react'
 import { StyleSheet, Text, TextProps } from 'react-native'
 
@@ -11,13 +12,13 @@ export function ThemedText({ type, style, ...props }: ThemedTextProps) {
 
 const styles = StyleSheet.create({
   text: {
-    color: '#000',
+    color: colors.foreground,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
   },
   link: {
-    color: '#0a7ea4',
+    color: colors.primary,
   },
 })
